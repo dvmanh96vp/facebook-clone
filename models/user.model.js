@@ -1,23 +1,26 @@
 import mongoose from "mongoose";
 
-const schema = mongoose.Schema(
-  {
-    firstName: { type: String, require: true },
-    lastName: { type: String, require: true },
+const schema = mongoose.Schema({
+    firstName: {type: String, require: true},
+    lastName: {type: String, require: true},
     avatar: {
-      type: String,
-      default: "img/avatar-default.png",
+        type: String, default: "img/avatar-default.png",
     },
-    gender: { type: String, require: true },
-    birthOfDate: { type: String, require: true },
-    userName: { type: String },
-    password: { type: String },
+    gender: {type: String, require: true},
+    birthOfDate: {type: String, require: true},
+    userName: {type: String},
+    password: {type: String},
     background: {
-      type: String,
-      default: "img/background-default.jpeg",
+        type: String, default: "img/background-default.jpeg",
     },
-  },
-  { timestamps: true }
-);
+    country: {
+        type: String
+    },
+    other: {
+        type: String
+    },
+    friendAccept_id: [String],
+    friendRequest_id: [String],
+}, {timestamps: true});
 
 export const UserModel = mongoose.model("User", schema);
