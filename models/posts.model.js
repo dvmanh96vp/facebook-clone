@@ -1,15 +1,18 @@
 import mongoose from "mongoose";
 
-const schema = new mongoose.Schema(
-  {
-    content: {
+const schema = new mongoose.Schema({
+    userId: {
+        type: String, required: true,
+    },
+    desc: {
         type: String,
     },
-      media: {
-        type: String
-      }
-  },
-  { timestamps: true }
-);
+    media: [String],
+    likes: {
+        type: Array,
+        default: []
+    }
+
+}, {timestamps: true});
 
 export const PostModel = mongoose.model("Posts", schema);

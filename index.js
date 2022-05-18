@@ -6,7 +6,8 @@ import mongoose from "mongoose";
 import user from "./routers/user.router.js";
 import path from "path";
 import dotenv from "dotenv";
-import multer from "multer";
+import media from "./routers/media.router.js";
+import friend from "./routers/friendship.router.js";
 
 dotenv.config();
 const app = express();
@@ -24,13 +25,15 @@ app.use(cors());
 app.use(express.static(dir));
 app.use("/user", user);
 app.use("/post", posts);
+app.use("/media", media);
+app.use("/friend", friend)
 
 mongoose
   .connect(URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    console.log("connect to mongodb");
+      console.log('abc')
     app.listen(PORT, () => {
-      console.log(`Server runing ${PORT}`);
+        console.log(PORT)
     });
   })
   .catch((err) => console.log("error:", err));

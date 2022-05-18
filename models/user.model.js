@@ -8,19 +8,18 @@ const schema = mongoose.Schema({
     },
     gender: {type: String, require: true},
     birthOfDate: {type: String, require: true},
-    userName: {type: String},
-    password: {type: String},
+    userName: {type: String, require: true, min: 3, max: 25,},
+    password: {type: String, require: true, min: 8},
     background: {
         type: String, default: "img/background-default.jpeg",
     },
-    country: {
-        type: String
-    },
     other: {
-        type: String
+        type: Object
     },
-    friendAccept_id: [String],
-    friendRequest_id: [String],
+    friend_accept: {type: Array, default: []},
+    friend_request: {type: Array, default: []},
+    follower: {type: Array, default: []},
+    album: {type: Array, default:[]}
 }, {timestamps: true});
 
 export const UserModel = mongoose.model("User", schema);

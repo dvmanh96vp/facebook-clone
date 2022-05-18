@@ -1,6 +1,5 @@
 import { UserModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
-import {decodeToken} from "../shared/decode-token.js";
 const { sign } = jwt;
 
 export const getUser = async (req, res) => {
@@ -68,7 +67,6 @@ export const loginUser = async (req, res) => {
 
 export const uploadImage = async (req, res) => {
   try {
-    const user = decodeToken(req.headers.authorization);
     const file = req.file;
     if(file) {
       let update;
@@ -82,7 +80,11 @@ export const uploadImage = async (req, res) => {
           background: image,
         }
       }
-      await UserModel.findOneAndUpdate({ userName: user.userName }, update, {new: true});
+      const user = await UserModel.findById(req.body.userId);
+      user.update(update);
+      if(!user.album.includes(image)) {
+        user.update({$push: {album: image}});
+      }
       res.status(200).send({status: "success", message: "File created successfully"})
     }
   }catch (error) {
