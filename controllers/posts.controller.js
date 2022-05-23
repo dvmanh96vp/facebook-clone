@@ -1,4 +1,6 @@
 import { PostModel } from "../models/posts.model.js";
+
+
 export const getPosts = async (req, res) => {
   try {
     const posts = await PostModel.find();
@@ -10,12 +12,18 @@ export const getPosts = async (req, res) => {
 
 export const createPost = async (req, res) => {
   try {
-    const newPost = req.body;
+    const article = {...req.body, media: []};
+    if(req.files) {
+      req.files.forEach((file) => {
+        if(!article.media.includes(`img/${file.filename}`)) {
+          article.media.push(`img/${file.filename}`);
+        }
+      })
+    }
+    const newPost = new PostModel(article);
+    await newPost.save();
 
-    const post = new PostModel(newPost);
-    await post.save();
-
-    res.status(200).json(post);
+    res.status(200).json("create article successfully");
   } catch (err) {
     res.status(500).json({ error: err });
   }
@@ -29,6 +37,22 @@ export const updatePost = async (req, res) => {
       { _id: updatePost._id },
       updatePost,
       { new: true }
+    );
+
+    res.status(200).json(post);
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  try {
+    const updatePost = req.body;
+
+    const post = await PostModel.findOneAndUpdate(
+        { _id: updatePost._id },
+        updatePost,
+        { new: true }
     );
 
     res.status(200).json(post);
