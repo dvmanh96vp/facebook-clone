@@ -1,4 +1,5 @@
 import { PostModel } from "../models/posts.model.js";
+import {UserModel} from "../models/user.model.js";
 
 
 export const getPosts = async (req, res) => {
@@ -13,13 +14,19 @@ export const getPosts = async (req, res) => {
 export const createPost = async (req, res) => {
   try {
     const article = {...req.body, media: []};
+    const user = await UserModel.findById(req.body.userId);
     if(req.files) {
       req.files.forEach((file) => {
         if(!article.media.includes(`img/${file.filename}`)) {
           article.media.push(`img/${file.filename}`);
         }
+
+        if(!user.album.includes(`img/${file.filename}`)) {
+          user.album.push(`img/${file.filename}`)
+        }
       })
     }
+    user.save();
     const newPost = new PostModel(article);
     await newPost.save();
 
