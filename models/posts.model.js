@@ -7,10 +7,9 @@ const schema = new mongoose.Schema({
     desc: {
         type: String,
     },
-    media: [String],
+    media: {type: Array, default: []},
     likes: {
-        type: Array,
-        default: []
+        type: Array, default: []
     }
 
 }, {timestamps: true});
