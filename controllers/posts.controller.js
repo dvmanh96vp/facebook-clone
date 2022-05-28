@@ -33,14 +33,14 @@ export const createPost = async (req, res) => {
                 type: file.mimetype
               }
           );
-        }
 
-        if (!user.album.includes(`img/${file.filename}`)) {
-          user.album.push(`img/${file.filename}`)
+          if(!user.album.map(item => item.path).includes(`img/${file.filename}`)) {
+            user.album.push({path: `img/${file.filename}`, type: file.mimetype});
+          }
         }
       })
     }
-    user.save();
+    await user.save();
     const newPost = new PostModel(article);
     await newPost.save();
 
@@ -52,15 +52,20 @@ export const createPost = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   try {
-    const updatePost = req.body;
-
-    const post = await PostModel.findOneAndUpdate(
-        {_id: updatePost._id},
-        updatePost,
-        {new: true}
-    );
-
-    res.status(200).json(post);
+    const body = req.body;
+    const post = await PostModel.findById(body.id);
+    if(body.hasOwnProperty('like')) {
+      if(!post.likes.includes(body.userId)) {
+        post.likes.push(body.userId)
+      } else {
+        post.likes = post.likes.filter(id  => id !== body.userId);
+      }
+      await post.save();
+    }
+    if(body.hasOwnProperty('desc')) {
+      post.update({desc: body.desc})
+    }
+    res.status(200).json("update post successfully");
   } catch (err) {
     res.status(500).json({error: err});
   }
@@ -68,15 +73,9 @@ export const updatePost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
-    const updatePost = req.body;
-
-    const post = await PostModel.findOneAndUpdate(
-        {_id: updatePost._id},
-        updatePost,
-        {new: true}
-    );
-
-    res.status(200).json(post);
+    const id = req.body.id;
+    await PostModel.deleteOne({_id: id});
+    res.status(200).json("delete this post successfully");
   } catch (err) {
     res.status(500).json({error: err});
   }

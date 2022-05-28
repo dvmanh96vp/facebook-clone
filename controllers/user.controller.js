@@ -73,21 +73,51 @@ export const uploadImage = async (req, res) => {
       const image = `img/${file.filename}`;
       if(req.body.type === 'avatar') {
         update = {
-          avatar: image,
+          avatar: image
         }
       } else {
         update = {
-          background: image,
+          background: image
         }
       }
       const user = await UserModel.findById(req.body.userId);
       user.update(update);
-      if(!user.album.includes(image)) {
-        user.update({$push: {album: image}});
+      if(!user.album.map(item => item.path).includes(image)) {
+        user.album.push({path: image, type: file.mimetype});
       }
+      await user.save();
       res.status(200).send({status: "success", message: "File created successfully"})
     }
   }catch (error) {
+    res.status(500).json(error);
+  }
+}
+
+export const requestFriend = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.body.userId);
+    const userRequest= await UserModel.findById(req.body.idReq);
+    await user.updateOne({$push: {friend_request: req.body.id}});
+    await userRequest.updateOne({$push: {follower: req.body.userId}})
+    res.status(200).json("request friend successfully");
+  } catch (error) {
+    res.status(500).json(error);
+  }
+}
+
+export const acceptFriend = async  (req, res) => {
+  try {
+    const user = await UserModel.findById(req.body.userId);
+    const userAcc= await UserModel.findById(req.body.idAcc);
+    //remove
+    await user.updateOne({$pull: {follower: req.body.idAcc}});
+    await userAcc.updateOne({$pull: {friend_request: req.body.userId}});
+
+    //add
+    await user.updateOne({$push: {friend_accept: req.body.idAcc}});
+    await userAcc.updateOne({$push: {friend_accept: req.body.userId}})
+    res.status(200).json("request friend successfully");
+  } catch (error) {
     res.status(500).json(error);
   }
 }
