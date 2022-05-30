@@ -6,7 +6,7 @@ export const getUser = async (req, res) => {
   try {
     const userId = req.query.user_id;
     const users = await UserModel.findOne({_id: userId});
-    const { userName, password, __v,updatedAt, createdAt, ...objUser } = users._doc;
+    const { userName, password, __v,updatedAt, createdAt, follower, friend_accept, friend_request, ...objUser } = users._doc;
     res.status(200).json(objUser);
   } catch (error) {
     res.status(500).json(error);
@@ -23,7 +23,7 @@ export const createUser = async (req, res) => {
     }
     const user = new UserModel(newUser);
     await user.save();
-    const { userName, password, __v, ...objUser } = user._doc;
+    const { userName, password, __v, follower, friend_accept, friend_request, ...objUser } = user._doc;
     const token = sign({ userName, password }, "shhhhh");
     res.status(200).json({ infor: objUser, token: token });
   } catch (error) {
@@ -51,7 +51,7 @@ export const loginUser = async (req, res) => {
       password: password,
     });
     if (user) {
-      const { userName, password, __v, ...objUser } = user._doc;
+      const { userName, password, __v,follower, friend_accept, friend_request, ...objUser } = user._doc;
       const token = sign({ userName, password }, "shhhhh");
       res.status(200).json({ infor: objUser, token: token });
     } else {
@@ -121,4 +121,26 @@ export const acceptFriend = async  (req, res) => {
     res.status(500).json(error);
   }
 }
+
+export const getListFriend = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const users = await UserModel.findOne({_id: userId});
+    const { friend_accept } = users._doc;
+    res.status(200).json({friend:friend_accept});
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+export const getListFollower = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const users = await UserModel.findOne({_id: userId});
+    const {follower} = users._doc;
+    res.status(200).json({follower});
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 

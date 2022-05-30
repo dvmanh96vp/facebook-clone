@@ -3,7 +3,7 @@ import {
   getUser,
   createUser,
   updateUser,
-  loginUser, uploadImage, requestFriend, acceptFriend,
+  loginUser, uploadImage, requestFriend, acceptFriend, getListFriend, getListFollower,
 } from "../controllers/user.controller.js";
 import multer from "multer";
 
@@ -25,5 +25,7 @@ router.post("/update", updateUser);
 router.post("/login", loginUser);
 router.post("/upload", upload.single('img'), uploadImage);
 router.post('/request-friend', requestFriend);
-router.post('/accept-friend', acceptFriend)
+router.post('/accept-friend', acceptFriend);
+router.get("/list-friend/:id", getListFriend);
+router.get("/list-follower/:id", getListFollower);
 export default router;
